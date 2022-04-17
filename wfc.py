@@ -3,25 +3,40 @@ import numpy as np
 import random
 
 TILE_NAMES = [
-	"./wfc-1.png",
-	"./wfc-2.png",
-	"./wfc-3.png",
-	"./wfc-4.png"
+	"./tiles/wfc-1.png",
+	"./tiles/wfc-2.png",
+	"./tiles/wfc-3.png",
+	"./tiles/wfc-4.png"
 ]
 
-TILE_NAMESX = [
-	"./wfc-a.png",
-	"./wfc-b.png",
-	"./wfc-c.png",
-	"./wfc-d.png",
-	"./wfc-e.png",
-	"./wfc-f.png",
-	"./wfc-g.png",
-	"./wfc-h.png",
-	"./wfc-i.png",
-	"./wfc-j.png",
-	"./wfc-k.png",
-	"./wfc-l.png",
+TILE_NAMES = [
+	"./tiles/wfc-a.png",
+	"./tiles/wfc-b.png",
+	"./tiles/wfc-c.png",
+	"./tiles/wfc-d.png",
+	"./tiles/wfc-e.png",
+	"./tiles/wfc-f.png",
+	"./tiles/wfc-g.png",
+	"./tiles/wfc-h.png",
+	"./tiles/wfc-i.png",
+	"./tiles/wfc-j.png",
+	"./tiles/wfc-k.png",
+	"./tiles/wfc-l.png",
+]
+
+TILE_NAMES = [
+	"./tiles/wfc-2c-1.png",
+	"./tiles/wfc-2c-2.png",
+	"./tiles/wfc-2c-3.png",
+	"./tiles/wfc-2c-4.png",
+	"./tiles/wfc-2c-5.png",
+	"./tiles/wfc-2c-6.png",
+	"./tiles/wfc-2c-7.png",
+	"./tiles/wfc-2c-8.png",
+	"./tiles/wfc-2c-9.png",
+	"./tiles/wfc-2c-10.png",
+	"./tiles/wfc-2c-11.png",
+	"./tiles/wfc-2c-12.png",
 ]
 
 OUTPUT_FILE = "wfc.png"
@@ -35,9 +50,10 @@ Y_TILES = 120
 
 class WaveFunctionCollapse():
 
-	def __init__(self):
+	def __init__(self, *, silent: bool = True):
 		self.tiles = []
 		self.tile_data = {}
+		self.silent = silent
 
 		self.left_side_data = {}
 		self.right_side_data = {}
@@ -104,10 +120,14 @@ class WaveFunctionCollapse():
 
 	def load_tiles(self, tile_names):
 		for tile_name in tile_names:
+			self.print(f"Loading tile {tile_name}")
 			img = cv2.imread(tile_name)
 			for _ in range(4):
 				self.process_tile(img)
 				img = np.rot90(img, axes=(1, 0))
+
+		self.horizontal_border_side = tuple([255] * (self.tile_width * self.tile_bpp))
+		self.vertical_border_side = tuple([255] * (self.tile_height * self.tile_bpp))
 
 	def try_find_tile_for(self, x: int, y: int) -> int:
 		top_ix = None
@@ -130,15 +150,23 @@ class WaveFunctionCollapse():
 
 		if left_ix is not None:
 			left_side = self.tile_data[left_ix]["right"]
+		elif x == 0:
+			left_side = self.vertical_border_side
 
 		if right_ix is not None:
 			right_side = self.tile_data[right_ix]["left"]
+		elif x == self.x_tiles - 1:
+			right_side = self.vertical_border_side
 
 		if top_ix is not None:
 			top_side = self.tile_data[top_ix]["bottom"]
+		elif y == 0:
+			top_side = self.horizontal_border_side
 
 		if bottom_ix is not None:
 			bottom_side = self.tile_data[bottom_ix]["top"]
+		elif y == self.y_tiles - 1:
+			bottom_side = self.horizontal_border_side
 
 		# todo
 		possibilities = set([ix for ix in range(len(self.tiles))])
@@ -173,7 +201,7 @@ class WaveFunctionCollapse():
 		self.tile_grid = [[None for _ in range(self.x_tiles)] for _ in range(y_tiles)]
 
 		# pick random tile for top-left
-		self.tile_grid[0][0] = random.randint(0, len(self.tiles) - 1)
+		# self.tile_grid[0][0] = random.randint(0, len(self.tiles) - 1)
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
 				if self.tile_grid[y][x] is not None:
@@ -182,6 +210,7 @@ class WaveFunctionCollapse():
 
 	def build_output(self):
 		output_shape = (self.tile_height * self.y_tiles, self.tile_width * self.x_tiles, self.tile_bpp)
+		self.print(f"Building image - Width: {self.tile_width * self.x_tiles}, Height: {self.tile_height * self.y_tiles}")
 		self.output = np.zeros(output_shape, np.uint8)
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
@@ -194,11 +223,16 @@ class WaveFunctionCollapse():
 
 	def save(self, filename: str):
 		self.build_output()
+		self.print(f"Saving {filename}")
 		cv2.imwrite(filename, self.output)
+
+	def print(self, message: str):
+		if not self.silent:
+			print(message)
 
 
 def main():
-	wfc = WaveFunctionCollapse()
+	wfc = WaveFunctionCollapse(silent = False)
 	wfc.load_tiles(TILE_NAMES)
 	wfc.generate(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
