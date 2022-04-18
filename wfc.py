@@ -24,7 +24,7 @@ TILE_NAMES = [
 	"./tiles/wfc-l.png",
 ]
 
-TILE_NAMES = [
+TILE_NAMESX = [
 	"./tiles/wfc-2c-1.png",
 	"./tiles/wfc-2c-2.png",
 	"./tiles/wfc-2c-3.png",
@@ -43,17 +43,18 @@ OUTPUT_FILE = "wfc.png"
 
 COLOR_DIVIDER = 1
 
-X_TILES = 160
-Y_TILES = 120
+X_TILES = 16
+Y_TILES = 12
 
 # OVERLAPPING = False
 
 class WaveFunctionCollapse():
 
-	def __init__(self, *, silent: bool = True):
+	def __init__(self, *, silent: bool = True, clean_edges: bool = False):
 		self.tiles = []
 		self.tile_data = {}
 		self.silent = silent
+		self.clean_edges = clean_edges
 
 		self.left_side_data = {}
 		self.right_side_data = {}
@@ -77,26 +78,52 @@ class WaveFunctionCollapse():
 		if self.tile_width != np.shape(tile)[1] or self.tile_height != np.shape(tile)[0] or self.tile_bpp != np.shape(tile)[2]:
 			raise Exception(f"All tiles must have the same size and depth ({self.tile_width}x{self.tile_height}*{self.tile_bpp})")
 
+		"""
 		top_row = np.copy(tile[0])
 		top_flat = tuple(list(top_row.reshape((self.tile_width * self.tile_bpp,))))
+		top_flat_r = tuple(reversed(top_flat))
+
+		tile = np.rot90(tile, axes=(1, 0))
+		left_row = np.copy(tile[0])
+		left_flat = tuple(list(left_row.reshape((self.tile_height * self.tile_bpp,))))
+		left_flat_r = tuple(reversed(left_flat))
+
+		tile = np.rot90(tile, axes=(1, 0))
+		bottom_row = np.copy(tile[0])
+		bottom_flat = tuple(list(bottom_row.reshape((self.tile_width * self.tile_bpp,))))
+		bottom_flat_r = tuple(reversed(bottom_flat))
+
+		tile = np.rot90(tile, axes=(1, 0))
+		right_row = np.copy(tile[0])
+		right_flat = tuple(list(right_row.reshape((self.tile_height * self.tile_bpp,))))
+		right_flat_r = tuple(reversed(right_flat))
+
+		tile = np.rot90(tile, axes=(1, 0))
+		"""
+		top_row = np.copy(tile[0])
+		top_flat = tuple(list(top_row.reshape((self.tile_width * self.tile_bpp,))))
+
+		bottom_row = np.copy(tile[-1])
+		bottom_flat = tuple(list(bottom_row.reshape((self.tile_width * self.tile_bpp,))))
 
 		tile = np.rot90(tile, axes=(1, 0))
 		left_row = np.copy(tile[0])
 		left_flat = tuple(list(left_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		tile = np.rot90(tile, axes=(1, 0))
-		bottom_row = np.copy(tile[0])
-		bottom_flat = tuple(list(bottom_row.reshape((self.tile_width * self.tile_bpp,))))
-
-		tile = np.rot90(tile, axes=(1, 0))
+		tile = np.rot90(tile, -2, axes=(1, 0))
 		right_row = np.copy(tile[0])
 		right_flat = tuple(list(right_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		tile = np.rot90(tile, axes=(1, 0))
+		tile = np.rot90(tile, 1, axes=(1, 0))
 
 		self.tiles.append(np.copy(tile))
 		tile_ix = len(self.tiles) - 1
-		self.tile_data[tile_ix] = {"top": top_flat, "bottom": bottom_flat, "left": left_flat, "right": right_flat}
+		self.tile_data[tile_ix] = {
+			"top": top_flat,
+			"bottom": bottom_flat,
+			"left": left_flat,
+			"right": right_flat
+		}
 
 		if top_flat in self.top_side_data:
 			self.top_side_data[top_flat].append(tile_ix)
@@ -150,22 +177,22 @@ class WaveFunctionCollapse():
 
 		if left_ix is not None:
 			left_side = self.tile_data[left_ix]["right"]
-		elif x == 0:
+		elif x == 0 and self.clean_edges:
 			left_side = self.vertical_border_side
 
 		if right_ix is not None:
 			right_side = self.tile_data[right_ix]["left"]
-		elif x == self.x_tiles - 1:
+		elif x == self.x_tiles - 1 and self.clean_edges:
 			right_side = self.vertical_border_side
 
 		if top_ix is not None:
 			top_side = self.tile_data[top_ix]["bottom"]
-		elif y == 0:
+		elif y == 0 and self.clean_edges:
 			top_side = self.horizontal_border_side
 
 		if bottom_ix is not None:
 			bottom_side = self.tile_data[bottom_ix]["top"]
-		elif y == self.y_tiles - 1:
+		elif y == self.y_tiles - 1 and self.clean_edges:
 			bottom_side = self.horizontal_border_side
 
 		# todo
@@ -191,7 +218,6 @@ class WaveFunctionCollapse():
 			return None
 
 		ix = random.choice(list(possibilities))
-
 		return ix
 
 	def generate(self, x_tiles: int, y_tiles: int):
@@ -232,7 +258,7 @@ class WaveFunctionCollapse():
 
 
 def main():
-	wfc = WaveFunctionCollapse(silent = False)
+	wfc = WaveFunctionCollapse(silent = False, clean_edges = True)
 	wfc.load_tiles(TILE_NAMES)
 	wfc.generate(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
