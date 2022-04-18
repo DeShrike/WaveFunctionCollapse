@@ -9,19 +9,19 @@ TILE_NAMES = [
 	"./tiles/wfc-4.png"
 ]
 
-TILE_NAMES = [
+TILE_NAMESX = [
 	"./tiles/wfc-a.png",
 	"./tiles/wfc-b.png",
 	"./tiles/wfc-c.png",
 	"./tiles/wfc-d.png",
 	"./tiles/wfc-e.png",
-	"./tiles/wfc-f.png",
-	"./tiles/wfc-g.png",
-	"./tiles/wfc-h.png",
-	"./tiles/wfc-i.png",
-	"./tiles/wfc-j.png",
-	"./tiles/wfc-k.png",
-	"./tiles/wfc-l.png",
+	# "./tiles/wfc-f.png",
+	# "./tiles/wfc-g.png",
+	# "./tiles/wfc-h.png",
+	# "./tiles/wfc-i.png",
+	# "./tiles/wfc-j.png",
+	# "./tiles/wfc-k.png",
+	# "./tiles/wfc-l.png",
 ]
 
 TILE_NAMES = [
@@ -35,16 +35,20 @@ TILE_NAMES = [
 	"./tiles/wfc-2c-8.png",
 	"./tiles/wfc-2c-9.png",
 	"./tiles/wfc-2c-10.png",
-	# "./tiles/wfc-2c-11.png",
-	# "./tiles/wfc-2c-12.png",
+	"./tiles/wfc-2c-11.png",
+	"./tiles/wfc-2c-12.png",
 ]
+
+CLEAR = u"\u001b[2J"
+HIDECURSOR = u"\u001b[?25l"
+SHOWCURSOR = u"\u001b[?25h"
 
 OUTPUT_FILE = "wfc.png"
 
 COLOR_DIVIDER = 1
 
-X_TILES = 16
-Y_TILES = 12
+X_TILES = 20 #16
+Y_TILES = 20	 #12
 
 # OVERLAPPING = False
 
@@ -176,26 +180,30 @@ class WaveFunctionCollapse():
 		possibilities = set([ix for ix in range(len(self.tiles))])
 
 		if left_side is not None:
+			if left_side not in self.left_side_data:
+				return []
 			poss = self.left_side_data[left_side]
 			possibilities = possibilities.intersection(poss)
 
 		if right_side is not None:
+			if right_side not in self.right_side_data:
+				return []
 			poss = self.right_side_data[right_side]
 			possibilities = possibilities.intersection(poss)
 
 		if top_side is not None:
+			if top_side not in self.top_side_data:
+				return []
 			poss = self.top_side_data[top_side]
 			possibilities = possibilities.intersection(poss)
 
 		if bottom_side is not None:
+			if bottom_side not in self.bottom_side_data:
+				return []
 			poss = self.bottom_side_data[bottom_side]
 			possibilities = possibilities.intersection(poss)
 
-		if len(possibilities) == 0:
-			return None
-
-		ix = random.choice(list(possibilities))
-		return ix
+		return list(possibilities)
 
 	def neighbors(self, x: int, y: int):
 		if x > 0:
@@ -208,6 +216,10 @@ class WaveFunctionCollapse():
 			yield (x, y + 1)
 
 	def generate(self, x_tiles: int, y_tiles: int):
+		"""
+		Iterative backtracking.
+		Very slow under certain conditions.
+		"""
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
 
@@ -218,34 +230,63 @@ class WaveFunctionCollapse():
 		y = random.randint(0, y_tiles - 1)
 		queue = [(x, y)]
 		path = []
+		print(CLEAR, end="")
+		print(HIDECURSOR, end="")
 		while len(queue) > 0:
-			x, y = queue.pop()
-			ix = self.try_find_tile_for(x, y)
-			if ix is None:
-				x, y = path.pop()
+			print(u"\u001b[1;1H", end="")
+			#print("================================")
+			x, y = queue.pop(0)
+			if self.tile_grid[y][x] is not None:
+				continue
+			#print(f"Trying {x},{y}")
+			possibilities = self.try_find_tile_for(x, y)
+			if len(possibilities) == 0:
+				#print("initial None")
 				queue.append((x, y))
-				self.tile_grid[y][x] = None
+				while True:
+					x, y, possibilities = path.pop()
+					#print(x, y, possibilities)
+					if len(possibilities) > 0:
+						ix = random.choice(possibilities)
+						possibilities.remove(ix)
+						self.tile_grid[y][x] = ix
+						path.append([x, y, possibilities])
+						break
+					else:
+						if (x, y) not in queue:
+							#print(f"none, appending {x},{y} to queue")
+							queue.append((x, y))
+						self.tile_grid[y][x] = None
 			else:
+				ix = random.choice(possibilities)
+				possibilities.remove(ix)
 				self.tile_grid[y][x] = ix
-				path.append((x, y))
+				path.append([x, y, possibilities])
 				for nx, ny in self.neighbors(x, y):
-					if self.tile_grid[ny][nx] is None:
+					if self.tile_grid[ny][nx] is None and (nx, ny) not in queue:
+						#print(f"Appending neighbor {nx},{ny} to queue")
 						queue.append((nx, ny))
 
-			# self.print_grid()
-			print(f"Path: {len(path)}  Queue: {len(queue)}")
+			self.print_grid()
+			#print(f"Path: {len(path)}  Queue: {len(queue)} ")
+			#print(queue)
 			# a = input()
+		print(SHOWCURSOR)
 
 	def print_grid(self):
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
 				if self.tile_grid[y][x] is None:
-					print(".", end="")
+					print("..", end=" ")
 				else:
-					print(self.tile_grid[y][x], end="")
+					print(f"{self.tile_grid[y][x]:2}", end=" ")
 			print("")
 
 	def generate_old(self, x_tiles: int, y_tiles: int):
+		"""
+		Non-backtracking.
+		Possible missing spots.
+		"""
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
 
@@ -281,7 +322,7 @@ class WaveFunctionCollapse():
 
 
 def main():
-	wfc = WaveFunctionCollapse(silent = False, clean_edges = True)
+	wfc = WaveFunctionCollapse(silent = False, clean_edges = False)
 	wfc.load_tiles(TILE_NAMES)
 	wfc.generate(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
