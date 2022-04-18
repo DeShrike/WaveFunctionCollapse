@@ -9,7 +9,7 @@ TILE_NAMES = [
 	"./tiles/wfc-4.png"
 ]
 
-TILE_NAMES = [
+TILE_NAMESX = [
 	"./tiles/wfc-a.png",
 	"./tiles/wfc-b.png",
 	"./tiles/wfc-c.png",
@@ -110,11 +110,13 @@ class WaveFunctionCollapse():
 		left_row = np.copy(tile[0])
 		left_flat = tuple(list(left_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		tile = np.rot90(tile, -2, axes=(1, 0))
-		right_row = np.copy(tile[0])
+		#tile = np.rot90(tile, -2, axes=(1, 0))
+		#right_row = np.copy(tile[0])
+		right_row = np.copy(tile[-1])
 		right_flat = tuple(list(right_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		tile = np.rot90(tile, 1, axes=(1, 0))
+		#tile = np.rot90(tile, 1, axes=(1, 0))
+		tile = np.rot90(tile, -1, axes=(1, 0))
 
 		self.tiles.append(np.copy(tile))
 		tile_ix = len(self.tiles) - 1
