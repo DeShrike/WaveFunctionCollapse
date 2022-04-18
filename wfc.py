@@ -9,7 +9,7 @@ TILE_NAMES = [
 	"./tiles/wfc-4.png"
 ]
 
-TILE_NAMESX = [
+TILE_NAMES = [
 	"./tiles/wfc-a.png",
 	"./tiles/wfc-b.png",
 	"./tiles/wfc-c.png",
@@ -24,7 +24,7 @@ TILE_NAMESX = [
 	"./tiles/wfc-l.png",
 ]
 
-TILE_NAMESX = [
+TILE_NAMES = [
 	"./tiles/wfc-2c-1.png",
 	"./tiles/wfc-2c-2.png",
 	"./tiles/wfc-2c-3.png",
@@ -35,8 +35,8 @@ TILE_NAMESX = [
 	"./tiles/wfc-2c-8.png",
 	"./tiles/wfc-2c-9.png",
 	"./tiles/wfc-2c-10.png",
-	"./tiles/wfc-2c-11.png",
-	"./tiles/wfc-2c-12.png",
+	# "./tiles/wfc-2c-11.png",
+	# "./tiles/wfc-2c-12.png",
 ]
 
 OUTPUT_FILE = "wfc.png"
@@ -78,28 +78,6 @@ class WaveFunctionCollapse():
 		if self.tile_width != np.shape(tile)[1] or self.tile_height != np.shape(tile)[0] or self.tile_bpp != np.shape(tile)[2]:
 			raise Exception(f"All tiles must have the same size and depth ({self.tile_width}x{self.tile_height}*{self.tile_bpp})")
 
-		"""
-		top_row = np.copy(tile[0])
-		top_flat = tuple(list(top_row.reshape((self.tile_width * self.tile_bpp,))))
-		top_flat_r = tuple(reversed(top_flat))
-
-		tile = np.rot90(tile, axes=(1, 0))
-		left_row = np.copy(tile[0])
-		left_flat = tuple(list(left_row.reshape((self.tile_height * self.tile_bpp,))))
-		left_flat_r = tuple(reversed(left_flat))
-
-		tile = np.rot90(tile, axes=(1, 0))
-		bottom_row = np.copy(tile[0])
-		bottom_flat = tuple(list(bottom_row.reshape((self.tile_width * self.tile_bpp,))))
-		bottom_flat_r = tuple(reversed(bottom_flat))
-
-		tile = np.rot90(tile, axes=(1, 0))
-		right_row = np.copy(tile[0])
-		right_flat = tuple(list(right_row.reshape((self.tile_height * self.tile_bpp,))))
-		right_flat_r = tuple(reversed(right_flat))
-
-		tile = np.rot90(tile, axes=(1, 0))
-		"""
 		top_row = np.copy(tile[0])
 		top_flat = tuple(list(top_row.reshape((self.tile_width * self.tile_bpp,))))
 
@@ -110,12 +88,9 @@ class WaveFunctionCollapse():
 		left_row = np.copy(tile[0])
 		left_flat = tuple(list(left_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		#tile = np.rot90(tile, -2, axes=(1, 0))
-		#right_row = np.copy(tile[0])
 		right_row = np.copy(tile[-1])
 		right_flat = tuple(list(right_row.reshape((self.tile_height * self.tile_bpp,))))
 
-		#tile = np.rot90(tile, 1, axes=(1, 0))
 		tile = np.rot90(tile, -1, axes=(1, 0))
 
 		self.tiles.append(np.copy(tile))
@@ -222,14 +197,60 @@ class WaveFunctionCollapse():
 		ix = random.choice(list(possibilities))
 		return ix
 
+	def neighbors(self, x: int, y: int):
+		if x > 0:
+			yield (x - 1, y)
+		if x < self.x_tiles - 1:
+			yield (x + 1, y)
+		if y > 0:
+			yield (x, y - 1)
+		if y < self.y_tiles - 1:
+			yield (x, y + 1)
+
 	def generate(self, x_tiles: int, y_tiles: int):
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
 
 		self.tile_grid = [[None for _ in range(self.x_tiles)] for _ in range(y_tiles)]
 
-		# pick random tile for top-left
-		# self.tile_grid[0][0] = random.randint(0, len(self.tiles) - 1)
+		# pick a random starting spot
+		x = random.randint(0, x_tiles - 1)
+		y = random.randint(0, y_tiles - 1)
+		queue = [(x, y)]
+		path = []
+		while len(queue) > 0:
+			x, y = queue.pop()
+			ix = self.try_find_tile_for(x, y)
+			if ix is None:
+				x, y = path.pop()
+				queue.append((x, y))
+				self.tile_grid[y][x] = None
+			else:
+				self.tile_grid[y][x] = ix
+				path.append((x, y))
+				for nx, ny in self.neighbors(x, y):
+					if self.tile_grid[ny][nx] is None:
+						queue.append((nx, ny))
+
+			# self.print_grid()
+			print(f"Path: {len(path)}  Queue: {len(queue)}")
+			# a = input()
+
+	def print_grid(self):
+		for y in range(self.y_tiles):
+			for x in range(self.x_tiles):
+				if self.tile_grid[y][x] is None:
+					print(".", end="")
+				else:
+					print(self.tile_grid[y][x], end="")
+			print("")
+
+	def generate_old(self, x_tiles: int, y_tiles: int):
+		self.x_tiles = x_tiles
+		self.y_tiles = y_tiles
+
+		self.tile_grid = [[None for _ in range(self.x_tiles)] for _ in range(y_tiles)]
+
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
 				if self.tile_grid[y][x] is not None:
