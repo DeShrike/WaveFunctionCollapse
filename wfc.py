@@ -39,7 +39,7 @@ TILE_NAMES = [
 	"./tiles/wfc-2c-12.png",
 ]
 
-TILE_NAMESX = [
+TILE_NAMES = [
 	"./tiles/circuit/circuit-1.png",
 	"./tiles/circuit/circuit-2.png",
 	"./tiles/circuit/circuit-3.png",
@@ -69,6 +69,12 @@ Y_TILES = 5	 #12
 DEBUG = False
 
 # OVERLAPPING = False
+
+class Wave():
+
+	def __init__(self, possibilities):
+		self.ix = None
+		self.possibilities = possibilities
 
 class WaveFunctionCollapse():
 
@@ -234,6 +240,17 @@ class WaveFunctionCollapse():
 			yield (x, y + 1)
 
 	def generate(self, x_tiles: int, y_tiles: int):
+		self.x_tiles = x_tiles
+		self.y_tiles = y_tiles
+
+		possibilities = [ix for ix in range(len(self.tiles))]
+		self.tile_grid = [[Wave(possibilities[:]) for _ in range(self.x_tiles)] for _ in range(y_tiles)]
+
+		# pick a random starting spot
+		x = random.randint(0, x_tiles - 1)
+		y = random.randint(0, y_tiles - 1)
+
+	def generate_old_2(self, x_tiles: int, y_tiles: int):
 		"""
 		Iterative backtracking.
 		Very slow under certain conditions.
