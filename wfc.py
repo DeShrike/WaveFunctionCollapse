@@ -63,10 +63,10 @@ OUTPUT_FILE = "wfc.png"
 
 COLOR_DIVIDER = 1
 
-X_TILES = 5 #16
-Y_TILES = 5	 #12
+X_TILES = 25
+Y_TILES = 20
 
-DEBUG = False
+DEBUG = True
 
 # OVERLAPPING = False
 
@@ -162,18 +162,19 @@ class WaveFunctionCollapse():
 		self.vertical_border_side = tuple([255] * (self.tile_height * self.tile_bpp))
 
 	def try_find_tile_for(self, x: int, y: int) -> int:
+
 		top_ix = None
 		bottom_ix = None
 		left_ix = None
 		right_ix = None
 		if x > 0:
-			left_ix = self.tile_grid[y][x - 1]
+			left_ix = self.tile_grid[y][x - 1].ix
 		if x < self.x_tiles - 1:
-			right_ix = self.tile_grid[y][x + 1]
+			right_ix = self.tile_grid[y][x + 1].ix
 		if y > 0:
-			top_ix = self.tile_grid[y - 1][x]
+			top_ix = self.tile_grid[y - 1][x].ix
 		if y < self.y_tiles - 1:
-			bottom_ix = self.tile_grid[y + 1][x]
+			bottom_ix = self.tile_grid[y + 1][x].ix
 
 		top_side = None
 		bottom_side = None
@@ -239,16 +240,66 @@ class WaveFunctionCollapse():
 		if y < self.y_tiles - 1:
 			yield (x, y + 1)
 
+	def update_neighbours(self, x: int, y: int):
+		for nx, ny in self.neighbors(x, y):
+			if self.tile_grid[ny][nx].ix is None:
+				t = self.tile_grid[ny][nx]
+				t.possibilities = self.try_find_tile_for(nx, ny)
+
+	def find_pos_lowest_entropy(self):
+		lowest = 1_000
+		lx = None
+		ly = None
+		for y in range(self.y_tiles):
+			for x in range(self.x_tiles):
+				if self.tile_grid[y][x].ix is None:
+					pc = len(self.tile_grid[y][x].possibilities)
+					if pc < lowest:
+						lowest = pc
+						lx = x
+						ly = y
+
+		return (lx, ly)
+
 	def generate(self, x_tiles: int, y_tiles: int):
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
 
 		possibilities = [ix for ix in range(len(self.tiles))]
-		self.tile_grid = [[Wave(possibilities[:]) for _ in range(self.x_tiles)] for _ in range(y_tiles)]
-
+		self.tile_grid = [[Wave(possibilities) for _ in range(self.x_tiles)] for _ in range(y_tiles)]
+		if self.clean_edges:
+			for x in range(self.x_tiles):
+				for y in range(self.y_tiles):
+					self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
 		# pick a random starting spot
 		x = random.randint(0, x_tiles - 1)
 		y = random.randint(0, y_tiles - 1)
+
+		t = self.tile_grid[y][x]
+		t.ix = random.choice(t.possibilities)
+		self.update_neighbours(x, y)
+
+		if DEBUG:
+			print(CLEAR, end="")
+			print(HIDECURSOR, end="")
+
+		while True:
+			if DEBUG:
+				print(u"\u001b[1;1H", end="")
+
+			x, y = self.find_pos_lowest_entropy()
+			if x is None:
+				break
+			t = self.tile_grid[y][x]
+			if len(t.possibilities) == 0:
+				t.ix = 0
+			else:
+				t.ix = random.choice(t.possibilities)
+			self.update_neighbours(x, y)
+
+			if DEBUG:
+				self.print_grid()
+				#a = input()
 
 	def generate_old_2(self, x_tiles: int, y_tiles: int):
 		"""
@@ -314,10 +365,10 @@ class WaveFunctionCollapse():
 	def print_grid(self):
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
-				if self.tile_grid[y][x] is None:
+				if self.tile_grid[y][x].ix is None:
 					print("..", end=" ")
 				else:
-					print(f"{self.tile_grid[y][x]:2}", end=" ")
+					print(f"{self.tile_grid[y][x].ix:2}", end=" ")
 			print("")
 
 	def generate_old(self, x_tiles: int, y_tiles: int):
@@ -344,9 +395,9 @@ class WaveFunctionCollapse():
 			for x in range(self.x_tiles):
 				px = x * self.tile_width
 				py = y * self.tile_height
-				if self.tile_grid[y][x] is None:
+				if self.tile_grid[y][x].ix is None:
 					continue
-				this_tile = self.tiles[self.tile_grid[y][x]]
+				this_tile = self.tiles[self.tile_grid[y][x].ix]
 				self.output[py:py + self.tile_height, px:px + self.tile_width, 0:self.tile_bpp] = this_tile
 
 	def save(self, filename: str):
