@@ -39,6 +39,22 @@ TILE_NAMES = [
 	"./tiles/wfc-2c-12.png",
 ]
 
+TILE_NAMESX = [
+	"./tiles/circuit/circuit-1.png",
+	"./tiles/circuit/circuit-2.png",
+	"./tiles/circuit/circuit-3.png",
+	"./tiles/circuit/circuit-4.png",
+	"./tiles/circuit/circuit-5.png",
+	"./tiles/circuit/circuit-6.png",
+	"./tiles/circuit/circuit-7.png",
+	"./tiles/circuit/circuit-8.png",
+	"./tiles/circuit/circuit-9.png",
+	"./tiles/circuit/circuit-10.png",
+	"./tiles/circuit/circuit-11.png",
+	"./tiles/circuit/circuit-12.png",
+	"./tiles/circuit/circuit-13.png",
+]
+
 CLEAR = u"\u001b[2J"
 HIDECURSOR = u"\u001b[?25l"
 SHOWCURSOR = u"\u001b[?25h"
@@ -47,8 +63,10 @@ OUTPUT_FILE = "wfc.png"
 
 COLOR_DIVIDER = 1
 
-X_TILES = 20 #16
-Y_TILES = 20	 #12
+X_TILES = 5 #16
+Y_TILES = 5	 #12
+
+DEBUG = False
 
 # OVERLAPPING = False
 
@@ -230,10 +248,12 @@ class WaveFunctionCollapse():
 		y = random.randint(0, y_tiles - 1)
 		queue = [(x, y)]
 		path = []
-		print(CLEAR, end="")
-		print(HIDECURSOR, end="")
+		if DEBUG:
+			print(CLEAR, end="")
+			print(HIDECURSOR, end="")
 		while len(queue) > 0:
-			print(u"\u001b[1;1H", end="")
+			if DEBUG:
+				print(u"\u001b[1;1H", end="")
 			#print("================================")
 			x, y = queue.pop(0)
 			if self.tile_grid[y][x] is not None:
@@ -266,12 +286,13 @@ class WaveFunctionCollapse():
 					if self.tile_grid[ny][nx] is None and (nx, ny) not in queue:
 						#print(f"Appending neighbor {nx},{ny} to queue")
 						queue.append((nx, ny))
-
-			self.print_grid()
+			if DEBUG:
+				self.print_grid()
 			#print(f"Path: {len(path)}  Queue: {len(queue)} ")
 			#print(queue)
 			# a = input()
-		print(SHOWCURSOR)
+		if DEBUG:
+			print(SHOWCURSOR)
 
 	def print_grid(self):
 		for y in range(self.y_tiles):
