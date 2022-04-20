@@ -2,6 +2,46 @@ import cv2
 import numpy as np
 import random
 
+SIMPLE = {
+	"clean_edges": False,
+	"overlapping": False,
+	"color_divider": 1,
+	"tiles": [
+		{
+			"filename": "./tiles/simple/wfc-1.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/simple/wfc-2.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/simple/wfc-3.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/simple/wfc-4.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+	]
+}
+
 TILE_NAMES = [
 	"./tiles/simple/wfc-1.png",
 	"./tiles/simple/wfc-2.png",
@@ -65,6 +105,17 @@ TILE_NAMES = [
    "./tiles/rgb/rgb-7.png",
    "./tiles/rgb/rgb-8.png",
    "./tiles/rgb/rgb-9.png",
+   "./tiles/rgb/rgb-10.png",
+   "./tiles/rgb/rgb-11.png",
+   "./tiles/rgb/rgb-12.png",
+   "./tiles/rgb/rgb-13.png",
+   "./tiles/rgb/rgb-14.png",
+   "./tiles/rgb/rgb-15.png",
+   "./tiles/rgb/rgb-16.png",
+   "./tiles/rgb/rgb-17.png",
+   "./tiles/rgb/rgb-18.png",
+   "./tiles/rgb/rgb-19.png",
+   "./tiles/rgb/rgb-20.png",
 ]
 
 CLEAR = u"\u001b[2J"
@@ -73,14 +124,10 @@ SHOWCURSOR = u"\u001b[?25h"
 
 OUTPUT_FILE = "wfc.png"
 
-COLOR_DIVIDER = 1
-
 X_TILES = 25
 Y_TILES = 20
 
 DEBUG = True
-
-# OVERLAPPING = False
 
 class Wave():
 
@@ -90,11 +137,11 @@ class Wave():
 
 class WaveFunctionCollapse():
 
-	def __init__(self, *, silent: bool = True, clean_edges: bool = False):
+	def __init__(self, *, silent: bool = True):
 		self.tiles = []
 		self.tile_data = {}
 		self.silent = silent
-		self.clean_edges = clean_edges
+		self.clean_edges = False
 
 		self.left_side_data = {}
 		self.right_side_data = {}
@@ -161,6 +208,13 @@ class WaveFunctionCollapse():
 			self.right_side_data[right_flat].append(tile_ix)
 		else:
 			self.right_side_data[right_flat] = [tile_ix]
+
+	def load_config(self, config):
+		self.color_divider = config["color_divider"]
+		self.overlapping = config["overlapping"]
+		self.clean_edges = config["clean_edges"]
+		for tile in config["tiles"]:
+			pass
 
 	def load_tiles(self, tile_names):
 		for tile_name in tile_names:
@@ -283,13 +337,15 @@ class WaveFunctionCollapse():
 			for x in range(self.x_tiles):
 				for y in range(self.y_tiles):
 					self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
-		# pick a random starting spot
-		x = random.randint(0, x_tiles - 1)
-		y = random.randint(0, y_tiles - 1)
 
-		t = self.tile_grid[y][x]
-		t.ix = random.choice(t.possibilities)
-		self.update_neighbours(x, y)
+		for _ in range(1):
+			# pick a random starting spot
+			x = random.randint(0, x_tiles - 1)
+			y = random.randint(0, y_tiles - 1)
+
+			t = self.tile_grid[y][x]
+			t.ix = random.choice(t.possibilities)
+			self.update_neighbours(x, y)
 
 		if DEBUG:
 			print(CLEAR, end="")
@@ -425,7 +481,8 @@ class WaveFunctionCollapse():
 
 
 def main():
-	wfc = WaveFunctionCollapse(silent = False, clean_edges = False)
+	wfc = WaveFunctionCollapse(silent = False)
+	# wfc.load_config(SIMPLE)
 	wfc.load_tiles(TILE_NAMES)
 	wfc.generate(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
