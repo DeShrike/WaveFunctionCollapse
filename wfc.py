@@ -3,43 +3,43 @@ import numpy as np
 import random
 
 TILE_NAMES = [
-	"./tiles/wfc-1.png",
-	"./tiles/wfc-2.png",
-	"./tiles/wfc-3.png",
-	"./tiles/wfc-4.png"
+	"./tiles/simple/wfc-1.png",
+	"./tiles/simple/wfc-2.png",
+	"./tiles/simple/wfc-3.png",
+	"./tiles/simple/wfc-4.png"
 ]
 
-TILE_NAMESX = [
+TILE_NAMES = [
 	"./tiles/wfc-a.png",
 	"./tiles/wfc-b.png",
 	"./tiles/wfc-c.png",
 	"./tiles/wfc-d.png",
 	"./tiles/wfc-e.png",
-	# "./tiles/wfc-f.png",
-	# "./tiles/wfc-g.png",
-	# "./tiles/wfc-h.png",
-	# "./tiles/wfc-i.png",
-	# "./tiles/wfc-j.png",
-	# "./tiles/wfc-k.png",
-	# "./tiles/wfc-l.png",
+	"./tiles/wfc-f.png",
+	"./tiles/wfc-g.png",
+	"./tiles/wfc-h.png",
+	"./tiles/wfc-i.png",
+	"./tiles/wfc-j.png",
+	"./tiles/wfc-k.png",
+	"./tiles/wfc-l.png",
 ]
 
-TILE_NAMES = [
-	"./tiles/wfc-2c-1.png",
-	"./tiles/wfc-2c-2.png",
-	"./tiles/wfc-2c-3.png",
-	"./tiles/wfc-2c-4.png",
-	"./tiles/wfc-2c-5.png",
-	"./tiles/wfc-2c-6.png",
-	"./tiles/wfc-2c-7.png",
-	"./tiles/wfc-2c-8.png",
-	"./tiles/wfc-2c-9.png",
-	"./tiles/wfc-2c-10.png",
-	"./tiles/wfc-2c-11.png",
-	"./tiles/wfc-2c-12.png",
+TILE_NAMESX = [
+	"./tiles/redblue/wfc-2c-1.png",
+	"./tiles/redblue/wfc-2c-2.png",
+	"./tiles/redblue/wfc-2c-3.png",
+	"./tiles/redblue/wfc-2c-4.png",
+	"./tiles/redblue/wfc-2c-5.png",
+	"./tiles/redblue/wfc-2c-6.png",
+	"./tiles/redblue/wfc-2c-7.png",
+	"./tiles/redblue/wfc-2c-8.png",
+	"./tiles/redblue/wfc-2c-9.png",
+	"./tiles/redblue/wfc-2c-10.png",
+	"./tiles/redblue/wfc-2c-11.png",
+	"./tiles/redblue/wfc-2c-12.png",
 ]
 
-TILE_NAMES = [
+TILE_NAMESX = [
 	"./tiles/circuit/circuit-1.png",
 	"./tiles/circuit/circuit-2.png",
 	"./tiles/circuit/circuit-3.png",
@@ -50,9 +50,21 @@ TILE_NAMES = [
 	"./tiles/circuit/circuit-8.png",
 	"./tiles/circuit/circuit-9.png",
 	"./tiles/circuit/circuit-10.png",
-	"./tiles/circuit/circuit-11.png",
-	"./tiles/circuit/circuit-12.png",
+	#"./tiles/circuit/circuit-11.png",
+	#"./tiles/circuit/circuit-12.png",
 	"./tiles/circuit/circuit-13.png",
+]
+
+TILE_NAMES = [
+   "./tiles/rgb/rgb-1.png",
+   "./tiles/rgb/rgb-2.png",
+   "./tiles/rgb/rgb-3.png",
+   "./tiles/rgb/rgb-4.png",
+   "./tiles/rgb/rgb-5.png",
+   "./tiles/rgb/rgb-6.png",
+   "./tiles/rgb/rgb-7.png",
+   "./tiles/rgb/rgb-8.png",
+   "./tiles/rgb/rgb-9.png",
 ]
 
 CLEAR = u"\u001b[2J"
@@ -292,7 +304,9 @@ class WaveFunctionCollapse():
 				break
 			t = self.tile_grid[y][x]
 			if len(t.possibilities) == 0:
+				print(f" ERROR: {x}, {y}    ")
 				t.ix = 0
+				return
 			else:
 				t.ix = random.choice(t.possibilities)
 			self.update_neighbours(x, y)
