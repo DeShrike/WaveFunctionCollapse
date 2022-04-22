@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import random
+import math
 
 SIMPLE = {
 	"clean_edges": False,
@@ -12,74 +13,253 @@ SIMPLE = {
 			"rotate90": True,
 			"rotate180": True,
 			"rotate270": True,
-			"flip_vertical": True,
-			"flip_horizontal": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
 		},
 		{
 			"filename": "./tiles/simple/wfc-2.png",
 			"rotate90": True,
-			"rotate180": True,
-			"rotate270": True,
-			"flip_vertical": True,
-			"flip_horizontal": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
 		},
 		{
 			"filename": "./tiles/simple/wfc-3.png",
 			"rotate90": True,
 			"rotate180": True,
 			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/simple/wfc-4.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+	]
+}
+
+REDBLUE = {
+	"clean_edges": False,
+	"overlapping": False,
+	"color_divider": 1,
+	"tiles": [
+		{
+			"filename": "./tiles/redblue/wfc-2c-1.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-2.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-3.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-4.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-5.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-6.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-7.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-8.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-9.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-10.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
 			"flip_vertical": True,
 			"flip_horizontal": True,
 		},
 		{
-			"filename": "./tiles/simple/wfc-4.png",
+			"filename": "./tiles/redblue/wfc-2c-11.png",
 			"rotate90": True,
 			"rotate180": True,
 			"rotate270": True,
-			"flip_vertical": True,
-			"flip_horizontal": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/redblue/wfc-2c-12.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+	]
+}
+
+CIRCUIT = {
+	"clean_edges": False,
+	"overlapping": False,
+	"color_divider": 1,
+	"tiles": [
+		{
+			"filename": "./tiles/circuit/circuit-1.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-2.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-3.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-4.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-5.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-6.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-7.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-8.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-9.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-10.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-11.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-12.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/circuit/circuit-13.png",
+			"rotate90": True,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
 		},
 	]
 }
 
 TILE_NAMES = [
-	"./tiles/simple/wfc-1.png",
-	"./tiles/simple/wfc-2.png",
-	"./tiles/simple/wfc-3.png",
-	"./tiles/simple/wfc-4.png"
-]
-
-TILE_NAMES = [
-	"./tiles/wfc-a.png",
-	"./tiles/wfc-b.png",
-	"./tiles/wfc-c.png",
-	"./tiles/wfc-d.png",
-	"./tiles/wfc-e.png",
-	"./tiles/wfc-f.png",
-	"./tiles/wfc-g.png",
-	"./tiles/wfc-h.png",
-	"./tiles/wfc-i.png",
-	"./tiles/wfc-j.png",
-	"./tiles/wfc-k.png",
-	"./tiles/wfc-l.png",
-]
-
-TILE_NAMESX = [
-	"./tiles/redblue/wfc-2c-1.png",
-	"./tiles/redblue/wfc-2c-2.png",
-	"./tiles/redblue/wfc-2c-3.png",
-	"./tiles/redblue/wfc-2c-4.png",
-	"./tiles/redblue/wfc-2c-5.png",
-	"./tiles/redblue/wfc-2c-6.png",
-	"./tiles/redblue/wfc-2c-7.png",
-	"./tiles/redblue/wfc-2c-8.png",
-	"./tiles/redblue/wfc-2c-9.png",
-	"./tiles/redblue/wfc-2c-10.png",
-	"./tiles/redblue/wfc-2c-11.png",
-	"./tiles/redblue/wfc-2c-12.png",
-]
-
-TILE_NAMESX = [
 	"./tiles/circuit/circuit-1.png",
 	"./tiles/circuit/circuit-2.png",
 	"./tiles/circuit/circuit-3.png",
@@ -214,7 +394,23 @@ class WaveFunctionCollapse():
 		self.overlapping = config["overlapping"]
 		self.clean_edges = config["clean_edges"]
 		for tile in config["tiles"]:
-			pass
+			img = cv2.imread(tile["filename"])
+			self.process_tile(img)
+			img90 = np.rot90(img, 1, axes=(1, 0))
+			img180 = np.rot90(img, 2, axes=(1, 0))
+			img270 = np.rot90(img, 3, axes=(1, 0))
+			flipud = np.flipud(img)
+			fliplr = np.fliplr(img)
+			if tile["rotate90"]:
+				self.process_tile(img90)
+			if tile["rotate180"]:
+				self.process_tile(img180)
+			if tile["rotate270"]:
+				self.process_tile(img270)
+			if tile["flip_vertical"]:
+				self.process_tile(fliplr)
+			if tile["flip_horizontal"]:
+				self.process_tile(flipud)
 
 	def load_tiles(self, tile_names):
 		for tile_name in tile_names:
@@ -224,8 +420,36 @@ class WaveFunctionCollapse():
 				self.process_tile(img)
 				img = np.rot90(img, axes=(1, 0))
 
+			img = np.flipud(img)
+			self.process_tile(img)
+			img = np.flipud(img)
+			img = np.fliplr(img)
+			self.process_tile(img)
+
 		self.horizontal_border_side = tuple([255] * (self.tile_width * self.tile_bpp))
 		self.vertical_border_side = tuple([255] * (self.tile_height * self.tile_bpp))
+
+	def create_tilesheet(self, filename: str):
+		count = len(self.tiles)
+		w = round(math.sqrt(count))
+		h = count // w + 1
+
+		output_shape = ((self.tile_height + 1) * h + 1, (self.tile_width + 1) * w + 1, self.tile_bpp)
+		# output_shape = (output_shape[0] * 2, output_shape[1] * 2, output_shape[2])
+		self.print(f"{count} tiles")
+		self.print(f"Building tilesheet {w} x {h} - Width: {output_shape[1]}, Height: {output_shape[0]}")
+		output = np.zeros(output_shape, np.uint8)
+
+		for ix, tile in enumerate(self.tiles):
+			tx = ix % w
+			ty = ix // w
+			ttx = tx * (self.tile_width + 1) + 1
+			tty = ty * (self.tile_height + 1) + 1
+			print(f"IX: {ix} {tx} x {ty} ({ttx} x {tty}")
+			output[tty:tty + self.tile_height, ttx:ttx + self.tile_width, 0:self.tile_bpp] = tile
+
+		self.print(f"Saving {filename}")
+		cv2.imwrite(filename, output)
 
 	def try_find_tile_for(self, x: int, y: int) -> int:
 
@@ -327,7 +551,7 @@ class WaveFunctionCollapse():
 
 		return (lx, ly)
 
-	def generate(self, x_tiles: int, y_tiles: int):
+	def collapse(self, x_tiles: int, y_tiles: int):
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
 
@@ -371,67 +595,6 @@ class WaveFunctionCollapse():
 				self.print_grid()
 				#a = input()
 
-	def generate_old_2(self, x_tiles: int, y_tiles: int):
-		"""
-		Iterative backtracking.
-		Very slow under certain conditions.
-		"""
-		self.x_tiles = x_tiles
-		self.y_tiles = y_tiles
-
-		self.tile_grid = [[None for _ in range(self.x_tiles)] for _ in range(y_tiles)]
-
-		# pick a random starting spot
-		x = random.randint(0, x_tiles - 1)
-		y = random.randint(0, y_tiles - 1)
-		queue = [(x, y)]
-		path = []
-		if DEBUG:
-			print(CLEAR, end="")
-			print(HIDECURSOR, end="")
-		while len(queue) > 0:
-			if DEBUG:
-				print(u"\u001b[1;1H", end="")
-			#print("================================")
-			x, y = queue.pop(0)
-			if self.tile_grid[y][x] is not None:
-				continue
-			#print(f"Trying {x},{y}")
-			possibilities = self.try_find_tile_for(x, y)
-			if len(possibilities) == 0:
-				#print("initial None")
-				queue.append((x, y))
-				while True:
-					x, y, possibilities = path.pop()
-					#print(x, y, possibilities)
-					if len(possibilities) > 0:
-						ix = random.choice(possibilities)
-						possibilities.remove(ix)
-						self.tile_grid[y][x] = ix
-						path.append([x, y, possibilities])
-						break
-					else:
-						if (x, y) not in queue:
-							#print(f"none, appending {x},{y} to queue")
-							queue.append((x, y))
-						self.tile_grid[y][x] = None
-			else:
-				ix = random.choice(possibilities)
-				possibilities.remove(ix)
-				self.tile_grid[y][x] = ix
-				path.append([x, y, possibilities])
-				for nx, ny in self.neighbors(x, y):
-					if self.tile_grid[ny][nx] is None and (nx, ny) not in queue:
-						#print(f"Appending neighbor {nx},{ny} to queue")
-						queue.append((nx, ny))
-			if DEBUG:
-				self.print_grid()
-			#print(f"Path: {len(path)}  Queue: {len(queue)} ")
-			#print(queue)
-			# a = input()
-		if DEBUG:
-			print(SHOWCURSOR)
-
 	def print_grid(self):
 		for y in range(self.y_tiles):
 			for x in range(self.x_tiles):
@@ -440,22 +603,6 @@ class WaveFunctionCollapse():
 				else:
 					print(f"{self.tile_grid[y][x].ix:2}", end=" ")
 			print("")
-
-	def generate_old(self, x_tiles: int, y_tiles: int):
-		"""
-		Non-backtracking.
-		Possible missing spots.
-		"""
-		self.x_tiles = x_tiles
-		self.y_tiles = y_tiles
-
-		self.tile_grid = [[None for _ in range(self.x_tiles)] for _ in range(y_tiles)]
-
-		for y in range(self.y_tiles):
-			for x in range(self.x_tiles):
-				if self.tile_grid[y][x] is not None:
-					continue
-				self.tile_grid[y][x] = self.try_find_tile_for(x, y)
 
 	def build_output(self):
 		output_shape = (self.tile_height * self.y_tiles, self.tile_width * self.x_tiles, self.tile_bpp)
@@ -482,9 +629,10 @@ class WaveFunctionCollapse():
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)
-	# wfc.load_config(SIMPLE)
-	wfc.load_tiles(TILE_NAMES)
-	wfc.generate(X_TILES, Y_TILES)
+	wfc.load_config(CIRCUIT)
+	#wfc.load_tiles(TILE_NAMES)
+	wfc.create_tilesheet(OUTPUT_FILE)
+	wfc.collapse(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
 
 if __name__ == "__main__":
