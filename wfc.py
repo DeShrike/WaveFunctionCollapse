@@ -10,8 +10,8 @@ SKYLINE = {
 	"color_divider": 1,
 	"tilesheet": {
 		"filename": "./tiles/skyline.png",
-		"tile_width": 5,
-		"tile_height": 5,
+		"tile_width": 6,
+		"tile_height": 6,
 	}
 }
 
@@ -21,8 +21,8 @@ FLOWER = {
 	"color_divider": 1,
 	"tilesheet": {
 		"filename": "./tiles/flower.png",
-		"tile_width": 3,
-		"tile_height": 3,
+		"tile_width": 6,
+		"tile_height": 6,
 	}
 }
 
@@ -600,10 +600,10 @@ SHOWCURSOR = u"\u001b[?25h"
 
 OUTPUT_FILE = "wfc.png"
 
-X_TILES = 20
-Y_TILES = 20
+X_TILES = 640 // 14
+Y_TILES = 480 // 14
 
-DEBUG = True
+DEBUG = False
 
 class Wave():
 
@@ -640,6 +640,10 @@ class WaveFunctionCollapse():
 
 		if self.tile_width != np.shape(tile)[1] or self.tile_height != np.shape(tile)[0] or self.tile_bpp != np.shape(tile)[2]:
 			raise Exception(f"All tiles must have the same size and depth ({self.tile_width}x{self.tile_height}*{self.tile_bpp})")
+
+		for t in self.tiles:
+			if np.array_equal(t, tile):
+				return
 
 		top_row = np.copy(tile[0])
 		top_flat = tuple(list(top_row.reshape((self.tile_width * self.tile_bpp,))))
@@ -712,6 +716,15 @@ class WaveFunctionCollapse():
 		sheet_name = sheet["filename"]
 		self.print(f"Loading sheet {sheet_name}")
 		img = cv2.imread(sheet_name)
+		tile_x = sheet["tile_width"]
+		tile_y = sheet["tile_height"]
+		sheet_x = img.shape[1]
+		sheet_y = img.shape[0]
+		print(f"Sheet: {sheet_x} x {sheet_y}  - Tile: {tile_x} x {tile_y}")
+		for y in range(sheet_y - tile_y):
+			for x in range(sheet_x - tile_x):
+				tile = img[y:y + tile_y, x:x + tile_x, :]
+				self.process_tile(tile)
 		# TODO
 		# iterate over the sheet and generate tiles
 
@@ -890,6 +903,10 @@ class WaveFunctionCollapse():
 				for y in range(self.y_tiles):
 					self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
 		"""
+		# x = 0
+		# y = self.y_tiles - 1
+		# self.tile_grid[y][x].ix = len(self.tiles) - 1
+		# self.update_neighbours(x, y)
 
 		if DEBUG:
 			print(CLEAR, end="")
@@ -910,6 +927,8 @@ class WaveFunctionCollapse():
 				x, y = queue.pop()
 				self.reset_neighbours(x, y)
 				backtracks += 1
+				if backtracks > 5000:
+					return
 				t = self.tile_grid[y][x]
 				#print(f"Popped {x},{y} -> {t.possibilities}         ")
 				t.ix = None
@@ -964,14 +983,23 @@ class WaveFunctionCollapse():
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)
-	# wfc.load_config(CIRCUIT)
+	wfc.load_config(CIRCUIT)
 	# wfc.load_config(REDBLUE)
 	# wfc.load_config(SIMPLE)
 	# wfc.load_config(RGB)
-	wfc.load_config(MONDRIAAN)
+	# wfc.load_config(MONDRIAAN)
+	# wfc.load_config(SKYLINE)
 	#wfc.create_tilesheet(OUTPUT_FILE)
-	wfc.collapse(X_TILES, Y_TILES)
-	wfc.save(OUTPUT_FILE)
+	for i in range(100):
+		OUTPUT_FILE = f"circuit-{i}.png"
+		wfc.collapse(X_TILES, Y_TILES)
+		wfc.save(OUTPUT_FILE)
 
 if __name__ == "__main__":
+
 	main()
+	"""
+	for i in range(100):
+		OUTPUT_FILE = f"mondriaan-{i}.png"
+		main()
+	"""
