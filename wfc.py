@@ -259,21 +259,165 @@ CIRCUIT = {
 	]
 }
 
-TILE_NAMES = [
-	"./tiles/circuit/circuit-1.png",
-	"./tiles/circuit/circuit-2.png",
-	"./tiles/circuit/circuit-3.png",
-	"./tiles/circuit/circuit-4.png",
-	"./tiles/circuit/circuit-5.png",
-	"./tiles/circuit/circuit-6.png",
-	"./tiles/circuit/circuit-7.png",
-	"./tiles/circuit/circuit-8.png",
-	"./tiles/circuit/circuit-9.png",
-	"./tiles/circuit/circuit-10.png",
-	#"./tiles/circuit/circuit-11.png",
-	#"./tiles/circuit/circuit-12.png",
-	"./tiles/circuit/circuit-13.png",
-]
+RGB = {
+	"clean_edges": False,
+	"overlapping": False,
+	"color_divider": 1,
+	"tiles": [
+		{
+			"filename": "./tiles/rgb/rgb-1.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-2.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-3.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-4.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-5.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-6.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-7.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-8.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-9.png",
+			"rotate90": False,
+			"rotate180": False,
+			"rotate270": False,
+			"flip_vertical": False,
+			"flip_horizontal": False,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-10.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-11.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-12.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-13.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-14.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-15.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-16.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-17.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-18.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+		{
+			"filename": "./tiles/rgb/rgb-19.png",
+			"rotate90": True,
+			"rotate180": True,
+			"rotate270": True,
+			"flip_vertical": True,
+			"flip_horizontal": True,
+		},
+	]
+}
 
 TILE_NAMES = [
    "./tiles/rgb/rgb-1.png",
@@ -393,6 +537,8 @@ class WaveFunctionCollapse():
 		self.color_divider = config["color_divider"]
 		self.overlapping = config["overlapping"]
 		self.clean_edges = config["clean_edges"]
+		self.clean_edges = False # Not implemented
+
 		for tile in config["tiles"]:
 			img = cv2.imread(tile["filename"])
 			self.process_tile(img)
@@ -412,6 +558,7 @@ class WaveFunctionCollapse():
 			if tile["flip_horizontal"]:
 				self.process_tile(flipud)
 
+	"""
 	def load_tiles(self, tile_names):
 		for tile_name in tile_names:
 			self.print(f"Loading tile {tile_name}")
@@ -428,6 +575,7 @@ class WaveFunctionCollapse():
 
 		self.horizontal_border_side = tuple([255] * (self.tile_width * self.tile_bpp))
 		self.vertical_border_side = tuple([255] * (self.tile_height * self.tile_bpp))
+	"""
 
 	def create_tilesheet(self, filename: str):
 		count = len(self.tiles)
@@ -435,7 +583,6 @@ class WaveFunctionCollapse():
 		h = count // w + 1
 
 		output_shape = ((self.tile_height + 1) * h + 1, (self.tile_width + 1) * w + 1, self.tile_bpp)
-		# output_shape = (output_shape[0] * 2, output_shape[1] * 2, output_shape[2])
 		self.print(f"{count} tiles")
 		self.print(f"Building tilesheet {w} x {h} - Width: {output_shape[1]}, Height: {output_shape[0]}")
 		output = np.zeros(output_shape, np.uint8)
@@ -445,7 +592,8 @@ class WaveFunctionCollapse():
 			ty = ix // w
 			ttx = tx * (self.tile_width + 1) + 1
 			tty = ty * (self.tile_height + 1) + 1
-			print(f"IX: {ix} {tx} x {ty} ({ttx} x {tty}")
+			if DEBUG:
+				print(f"IX: {ix} {tx} x {ty} ({ttx} x {tty}")
 			output[tty:tty + self.tile_height, ttx:ttx + self.tile_width, 0:self.tile_bpp] = tile
 
 		self.print(f"Saving {filename}")
@@ -457,6 +605,7 @@ class WaveFunctionCollapse():
 		bottom_ix = None
 		left_ix = None
 		right_ix = None
+
 		if x > 0:
 			left_ix = self.tile_grid[y][x - 1].ix
 		if x < self.x_tiles - 1:
@@ -491,7 +640,6 @@ class WaveFunctionCollapse():
 		elif y == self.y_tiles - 1 and self.clean_edges:
 			bottom_side = self.horizontal_border_side
 
-		# todo
 		possibilities = set([ix for ix in range(len(self.tiles))])
 
 		if left_side is not None:
@@ -554,13 +702,18 @@ class WaveFunctionCollapse():
 	def collapse(self, x_tiles: int, y_tiles: int):
 		self.x_tiles = x_tiles
 		self.y_tiles = y_tiles
+		queue = []
+		backtracks = 0
 
 		possibilities = [ix for ix in range(len(self.tiles))]
 		self.tile_grid = [[Wave(possibilities) for _ in range(self.x_tiles)] for _ in range(y_tiles)]
+
+		"""
 		if self.clean_edges:
 			for x in range(self.x_tiles):
 				for y in range(self.y_tiles):
 					self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
+		"""
 
 		for _ in range(1):
 			# pick a random starting spot
@@ -570,6 +723,7 @@ class WaveFunctionCollapse():
 			t = self.tile_grid[y][x]
 			t.ix = random.choice(t.possibilities)
 			self.update_neighbours(x, y)
+			queue.append((x, y))
 
 		if DEBUG:
 			print(CLEAR, end="")
@@ -583,17 +737,27 @@ class WaveFunctionCollapse():
 			if x is None:
 				break
 			t = self.tile_grid[y][x]
-			if len(t.possibilities) == 0:
-				print(f" ERROR: {x}, {y}    ")
-				t.ix = 0
-				return
-			else:
-				t.ix = random.choice(t.possibilities)
+			self.update_neighbours(x, y)
+
+			while len(t.possibilities) == 0:
+				x, y = queue.pop()
+				backtracks += 1
+				t = self.tile_grid[y][x]
+				t.ix = None
+
+			t.ix = random.choice(t.possibilities)
+			t.possibilities.remove(t.ix)
+			queue.append((x, y))
+
 			self.update_neighbours(x, y)
 
 			if DEBUG:
 				self.print_grid()
+				print(f"{backtracks} backtracks")
 				#a = input()
+
+		if DEBUG:
+			print(SHOWCURSOR, end="")
 
 	def print_grid(self):
 		for y in range(self.y_tiles):
@@ -629,9 +793,11 @@ class WaveFunctionCollapse():
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)
-	wfc.load_config(CIRCUIT)
-	#wfc.load_tiles(TILE_NAMES)
-	wfc.create_tilesheet(OUTPUT_FILE)
+	# wfc.load_config(CIRCUIT)
+	# wfc.load_config(REDBLUE)
+	# wfc.load_config(SIMPLE)
+	wfc.load_config(RGB)
+	# wfc.create_tilesheet(OUTPUT_FILE)
 	wfc.collapse(X_TILES, Y_TILES)
 	wfc.save(OUTPUT_FILE)
 
