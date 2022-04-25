@@ -23,6 +23,7 @@ class WaveFunctionCollapse():
 		self.tile_data = {}
 		self.silent = silent
 		self.clean_edges = False
+		self.backtrack_limit = 5000
 
 		self.left_side_data = {}
 		self.right_side_data = {}
@@ -97,7 +98,7 @@ class WaveFunctionCollapse():
 	def load_tiles(self, config):
 		for tile in config["tiles"]:
 			tile_name = tile["filename"]
-			self.print(f"Loading tile {tile_name}")
+			# self.print(f"Loading tile {tile_name}")
 			img = cv2.imread(tile_name)
 			self.process_tile(img)
 			img90 = np.rot90(img, 1, axes=(1, 0))
@@ -125,7 +126,7 @@ class WaveFunctionCollapse():
 		tile_y = sheet["tile_height"]
 		sheet_x = img.shape[1]
 		sheet_y = img.shape[0]
-		print(f"Sheet: {sheet_x} x {sheet_y}  - Tile: {tile_x} x {tile_y}")
+		self.print(f"Sheet: {sheet_x} x {sheet_y}  - Tile: {tile_x} x {tile_y}")
 		for y in range(sheet_y - tile_y):
 			for x in range(sheet_x - tile_x):
 				tile = img[y:y + tile_y, x:x + tile_x, :]
@@ -271,17 +272,13 @@ class WaveFunctionCollapse():
 				t.possibilities = self.try_find_tile_for(nx, ny)
 
 	def reset_neighbours(self, x: int, y: int):
-		# if self.tile_grid[y][x].ix is None:
-		# 	t = self.tile_grid[y][x]
-		# 	t.possibilities = self.all_possibilities[:]
-
 		for nx, ny in self.neighbors(x, y):
 			if self.tile_grid[ny][nx].ix is None:
 				t = self.tile_grid[ny][nx]
 				t.possibilities = self.all_possibilities[:]
 
 	def find_pos_lowest_entropy(self):
-		lowest = 1_000
+		lowest = 1_000_000
 		lx = None
 		ly = None
 		for y in range(self.y_tiles):
@@ -313,7 +310,7 @@ class WaveFunctionCollapse():
 					self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
 		"""
 
-		for _ in range(5):
+		for _ in range(2):
 			x = random.randint(0, self.x_tiles - 1)
 			y = random.randint(0, self.y_tiles - 1)
 			if self.tile_grid[y][x].ix is None:
@@ -333,7 +330,7 @@ class WaveFunctionCollapse():
 			if x is None:
 				break
 			t = self.tile_grid[y][x]
-			#print(f"Found {x},{y} -> {t.possibilities}         ")
+			print(f"Found {x},{y} -> {t.possibilities}         ")
 			self.update_neighbours(x, y)
 
 			if len(t.possibilities) == 0:
@@ -343,13 +340,13 @@ class WaveFunctionCollapse():
 				x, y = queue.pop()
 				self.reset_neighbours(x, y)
 				backtracks += 1
-				if backtracks > 5000:
+				if backtracks > self.backtrack_limit:
 					return
 				t = self.tile_grid[y][x]
-				#print(f"Popped {x},{y} -> {t.possibilities}         ")
+				print(f"Popped {x},{y} -> {t.possibilities}         ")
 				t.ix = None
 
-			#print("----------------            ")
+			print("----------------            ")
 			t.ix = random.choice(t.possibilities)
 			t.possibilities.remove(t.ix)
 			queue.append((x, y))
@@ -360,8 +357,15 @@ class WaveFunctionCollapse():
 				self.print_grid()
 				print("----------------              ")
 				print(f"{backtracks} backtracks")
-				#print("                                   ")
-				#a = input()
+				print("                                   ")
+
+				for dy in range(self.y_tiles):
+					for dx in range(self.x_tiles):
+						if len(self.tile_grid[dy][dx].possibilities) != len(self.tiles):
+							print(f"{dx},{dy} : {self.tile_grid[dy][dx].ix} -> {self.tile_grid[dy][dx].possibilities}      ")
+				print("----------------              ")
+
+				a = input()
 
 		if DEBUG:
 			print(SHOWCURSOR, end="")
