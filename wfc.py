@@ -8,7 +8,7 @@ CLEAR = u"\u001b[2J"
 HIDECURSOR = u"\u001b[?25l"
 SHOWCURSOR = u"\u001b[?25h"
 
-DEBUG = True
+DEBUG = False
 
 class Wave():
 
@@ -330,23 +330,30 @@ class WaveFunctionCollapse():
 			if x is None:
 				break
 			t = self.tile_grid[y][x]
-			print(f"Found {x},{y} -> {t.possibilities}         ")
-			self.update_neighbours(x, y)
+			if DEBUG:
+				print(f"Found {x},{y} -> {t.possibilities}         ")
+			# self.update_neighbours(x, y)
 
-			if len(t.possibilities) == 0:
+			no_possibilities = len(t.possibilities) == 0
+			if no_possibilities:
 				self.reset_neighbours(x, y)
+				self.tile_grid[y][x].possibilities = self.try_find_tile_for(x, y)
 
-			while len(t.possibilities) == 0:
+			while no_possibilities:
 				x, y = queue.pop()
 				self.reset_neighbours(x, y)
 				backtracks += 1
 				if backtracks > self.backtrack_limit:
 					return
 				t = self.tile_grid[y][x]
-				print(f"Popped {x},{y} -> {t.possibilities}         ")
+				if DEBUG:
+					print(f"Popped {x},{y} -> {t.possibilities}         ")
+
+				no_possibilities = len(t.possibilities) == 0
 				t.ix = None
 
-			print("----------------            ")
+			if DEBUG:
+				print("----------------            ")
 			t.ix = random.choice(t.possibilities)
 			t.possibilities.remove(t.ix)
 			queue.append((x, y))

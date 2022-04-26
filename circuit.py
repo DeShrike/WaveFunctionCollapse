@@ -115,8 +115,8 @@ CONFIG = {
 OUTPUT_FILE = "circuit.png"
 TILESHEET_FILE = "circuit-tilesheet.png"
 
-X_TILES = 20
-Y_TILES = 20
+X_TILES = 1920 // 14
+Y_TILES = 1080 // 14
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)

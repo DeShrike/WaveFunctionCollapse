@@ -156,26 +156,15 @@ CONFIG = {
 OUTPUT_FILE = "mondriaan.png"
 TILESHEET_FILE = "mondriaan-tilesheet.png"
 
-X_TILES = 5 # 640 // 20
-Y_TILES = 5 # 480 // 20
+X_TILES = 20 # 640 // 20
+Y_TILES = 20 # 480 // 20
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)
 	wfc.load_config(CONFIG)
 	wfc.create_tilesheet(TILESHEET_FILE)
-	for i in range(1000):
-		random.seed(i)
-		try:
-			wfc.collapse(X_TILES, Y_TILES)
-			wfc.save(OUTPUT_FILE)
-		except Exception as e:
-			print(f"   Seed = {i}       ")
-			print(e)
-			return
-		else:
-			pass
-		finally:
-			pass
+	wfc.collapse(X_TILES, Y_TILES)
+	wfc.save(OUTPUT_FILE)
 
 if __name__ == "__main__":
 	main()
