@@ -43,8 +43,8 @@ CONFIG = {
 OUTPUT_FILE = "simple.png"
 TILESHEET_FILE = "simple-tilesheet.png"
 
-X_TILES = 20
-Y_TILES = 20
+X_TILES = 50
+Y_TILES = 50
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)

@@ -5,17 +5,17 @@ CONFIG = {
 	"overlapping": True,
 	"color_divider": 1,
 	"tilesheet": {
-		"filename": "./tiles/skyline.png",
-		"tile_width": 6,
-		"tile_height": 6,
+		"filename": "./tiles/abstract.png",
+		"tile_width": 7,
+		"tile_height": 7,
 	}
 }
 
-OUTPUT_FILE = "skyline.png"
-TILESHEET_FILE = "skyline-tilesheet.png"
+OUTPUT_FILE = "abstract.png"
+TILESHEET_FILE = "abstract-tilesheet.png"
 
-X_TILES = 20
-Y_TILES = 20
+X_TILES = 40
+Y_TILES = 40
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)

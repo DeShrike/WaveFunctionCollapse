@@ -156,8 +156,8 @@ CONFIG = {
 OUTPUT_FILE = "mondriaan.png"
 TILESHEET_FILE = "mondriaan-tilesheet.png"
 
-X_TILES = 20 # 640 // 20
-Y_TILES = 20 # 480 // 20
+X_TILES = 40 # 640 // 20
+Y_TILES = 40 # 480 // 20
 
 def main():
 	wfc = WaveFunctionCollapse(silent = False)
