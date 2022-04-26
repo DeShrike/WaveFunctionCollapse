@@ -21,3 +21,34 @@ python simple.py
 ```
 
 ![simple sample](examples/simple.png)
+
+```
+python redblue.py
+```
+
+![redblue sample](examples/redblue.png)
+
+```
+python rgb.py
+```
+
+![rgb sample](examples/rgb.png)
+
+```
+python abstract.py
+```
+
+![abstract sample](examples/abstract.png)
+
+```
+python circuit.py
+```
+
+![circuit sample](examples/circuit.png)
+
+```
+python mondriaan.py
+```
+
+![mondriaan sample](examples/mondriaan.png)
+
