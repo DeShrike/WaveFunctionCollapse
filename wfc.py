@@ -32,11 +32,16 @@ DEBUG = False
 
 class Wave():
 
+	__slots__ = "ix", "possibilities"
+
 	def __init__(self, possibilities):
 		self.ix = None
 		self.possibilities = possibilities
 
+
 class WaveFunctionCollapse():
+
+	__slots__ = "tiles", "tile_data", "silent", "clean_edges", "backtrack_limit", "left_side_data", "right_side_data", "top_side_data", "bottom_side_data", "tile_width", "tile_height", "tile_bpp", "color_divider", "overlapping", "x_tiles", "y_tiles", "all_possibilities", "tile_grid", "output"
 
 	def __init__(self, *, silent: bool = True):
 		self.tiles = []
