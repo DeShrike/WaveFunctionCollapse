@@ -1,8 +1,28 @@
+import logging
 import cv2
 import numpy as np
 import random
 import math
 import sys
+
+# debug, info, warning, error, critical
+
+# logging.basicConfig(level=logging.DEBUG,
+# 					filename="wfc.log",
+# 					filemode="w",
+# 					format="%(asctime)s - %(levelname)s - %(funcName)s - %(message)s")
+
+# logger = logging.getLogger(__name__)
+# handler = logging.FileHandler("test.log")
+# formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s")
+# handler.setFormatter(formatter)
+# logger.addHandler(handler)
+# logger.info("Test")
+
+# %(funcName)s
+# %(lineno)d
+# %(module)s
+# %(filename)s
 
 CLEAR = u"\u001b[2J"
 HIDECURSOR = u"\u001b[?25l"
@@ -98,7 +118,6 @@ class WaveFunctionCollapse():
 	def load_tiles(self, config):
 		for tile in config["tiles"]:
 			tile_name = tile["filename"]
-			# self.print(f"Loading tile {tile_name}")
 			img = cv2.imread(tile_name)
 			self.process_tile(img)
 			img90 = np.rot90(img, 1, axes=(1, 0))
@@ -131,8 +150,6 @@ class WaveFunctionCollapse():
 			for x in range(sheet_x - tile_x):
 				tile = img[y:y + tile_y, x:x + tile_x, :]
 				self.process_tile(tile)
-		# TODO
-		# iterate over the sheet and generate tiles
 
 	def load_config(self, config):
 		self.color_divider = config["color_divider"]
@@ -144,25 +161,6 @@ class WaveFunctionCollapse():
 			self.generate_overlapped_tiles(config)
 		else:
 			self.load_tiles(config)
-
-	"""
-	def load_tiles(self, tile_names):
-		for tile_name in tile_names:
-			self.print(f"Loading tile {tile_name}")
-			img = cv2.imread(tile_name)
-			for _ in range(4):
-				self.process_tile(img)
-				img = np.rot90(img, axes=(1, 0))
-
-			img = np.flipud(img)
-			self.process_tile(img)
-			img = np.flipud(img)
-			img = np.fliplr(img)
-			self.process_tile(img)
-
-		self.horizontal_border_side = tuple([255] * (self.tile_width * self.tile_bpp))
-		self.vertical_border_side = tuple([255] * (self.tile_height * self.tile_bpp))
-	"""
 
 	def create_tilesheet(self, filename: str):
 		count = len(self.tiles)
@@ -179,8 +177,6 @@ class WaveFunctionCollapse():
 			ty = ix // w
 			ttx = tx * (self.tile_width + 1) + 1
 			tty = ty * (self.tile_height + 1) + 1
-			if DEBUG:
-				print(f"IX: {ix} {tx} x {ty} ({ttx} x {tty}")
 			output[tty:tty + self.tile_height, ttx:ttx + self.tile_width, 0:self.tile_bpp] = tile
 
 		self.print(f"Saving {filename}")
@@ -318,21 +314,11 @@ class WaveFunctionCollapse():
 				self.update_neighbours(x, y)
 				queue.append((x, y))
 
-		if DEBUG:
-			print(CLEAR, end="")
-			print(HIDECURSOR, end="")
-
 		while True:
-			if DEBUG:
-				print(u"\u001b[1;1H", end="")
-
 			x, y = self.find_pos_lowest_entropy()
 			if x is None:
 				break
 			t = self.tile_grid[y][x]
-			if DEBUG:
-				print(f"Found {x},{y} -> {t.possibilities}         ")
-			# self.update_neighbours(x, y)
 
 			no_possibilities = len(t.possibilities) == 0
 			if no_possibilities:
@@ -346,36 +332,14 @@ class WaveFunctionCollapse():
 				if backtracks > self.backtrack_limit:
 					return
 				t = self.tile_grid[y][x]
-				if DEBUG:
-					print(f"Popped {x},{y} -> {t.possibilities}         ")
-
 				no_possibilities = len(t.possibilities) == 0
 				t.ix = None
 
-			if DEBUG:
-				print("----------------            ")
 			t.ix = random.choice(t.possibilities)
 			t.possibilities.remove(t.ix)
 			queue.append((x, y))
 
 			self.update_neighbours(x, y)
-
-			if DEBUG:
-				self.print_grid()
-				print("----------------              ")
-				print(f"{backtracks} backtracks")
-				print("                                   ")
-
-				for dy in range(self.y_tiles):
-					for dx in range(self.x_tiles):
-						if len(self.tile_grid[dy][dx].possibilities) != len(self.tiles):
-							print(f"{dx},{dy} : {self.tile_grid[dy][dx].ix} -> {self.tile_grid[dy][dx].possibilities}      ")
-				print("----------------              ")
-
-				a = input()
-
-		if DEBUG:
-			print(SHOWCURSOR, end="")
 
 	def print_grid(self):
 		for y in range(self.y_tiles):
